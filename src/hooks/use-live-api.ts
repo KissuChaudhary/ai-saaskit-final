@@ -5,7 +5,7 @@ import {
 } from "@/lib/multimodal-live-client";
 import { LiveConfig } from "@/types/multimodal-live-types";
 import { AudioStreamer } from "@/lib/audio-streamer";
-import { audioContext } from "@/lib/utils";
+import { createAudioContext } from "@/lib/utils"; // Changed from audioContext to createAudioContext
 import VolMeterWorket from "@/lib/worklets/vol-meter";
 
 export type UseLiveAPIResults = {
@@ -37,7 +37,7 @@ export function useLiveAPI({
   // register audio for streaming server -> speakers
   useEffect(() => {
     if (!audioStreamerRef.current) {
-      audioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {
+      createAudioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {
         audioStreamerRef.current = new AudioStreamer(audioCtx);
         audioStreamerRef.current
           .addWorklet<any>("vumeter-out", VolMeterWorket, (ev: any) => {
@@ -98,3 +98,4 @@ export function useLiveAPI({
     volume,
   };
 }
+

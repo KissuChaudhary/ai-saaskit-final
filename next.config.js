@@ -1,7 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-}
 
-module.exports = nextConfig 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      
+    ],
+    domains: ['fal.media', 'replicate.delivery'],
+    unoptimized: true,
+  },
+};
+
+module.exports = nextConfig;
