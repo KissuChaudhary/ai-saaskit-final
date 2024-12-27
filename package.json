@@ -17,6 +17,8 @@
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.47.2",
     "@types/lodash": "^4.17.13",
+    "canvas": "^2.11.2",
+    "vega-canvas": "^1.2.6",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
