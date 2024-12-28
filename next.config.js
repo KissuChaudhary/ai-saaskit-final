@@ -1,17 +1,22 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-
+  reactStrictMode: true,
+  swcMinify: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-      
-    ],
-    domains: ['fal.media', 'replicate.delivery'],
-    unoptimized: true,
+    domains: ['fal.media', 'replicate.delivery'], // Add any domains you're loading images from
   },
-};
+  async redirects() {
+    return [
+      // Add any necessary redirects here
+    ]
+  },
+  async rewrites() {
+    return [
+      // Add any necessary rewrites here
+    ]
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
+
