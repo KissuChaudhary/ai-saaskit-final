@@ -8,15 +8,16 @@ import { PayPalNamespace } from "@paypal/paypal-js"
 
 interface PayPalButtonProps {
   planId: string
-  price: string
+  amount: number
   userId: string
+  onSuccess?: () => void
 }
 
 declare global {
   var paypal: PayPalNamespace | null | undefined;
 }
 
-export default function PayPalButton({ planId, price, userId }: PayPalButtonProps) {
+export default function PayPalButton({ planId, amount, userId, onSuccess }: PayPalButtonProps) {
   const paypalRef = useRef<HTMLDivElement>(null)
   const [paypalScriptLoaded, setPaypalScriptLoaded] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -30,7 +31,7 @@ export default function PayPalButton({ planId, price, userId }: PayPalButtonProp
     }
 
     const script = document.createElement("script")
-    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD`
+    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD&intent=capture`
     script.async = true
     script.onload = () => setPaypalScriptLoaded(true)
     script.onerror = () => {
@@ -51,17 +52,24 @@ export default function PayPalButton({ planId, price, userId }: PayPalButtonProp
         paypal.Buttons({
           fundingSource: paypal.FUNDING.PAYPAL,
           style: {
-            color: "black",
-            label: "pay",
-            shape: "pill",
+            color: "gold",
+            shape: "rect",
+            label: "paypal",
+            layout: "vertical",
           },
           createOrder: (data: any, actions: any) => {
             return actions.order.create({
+              application_context: {
+                shipping_preference: 'NO_SHIPPING',
+                user_action: 'PAY_NOW',
+              },
               purchase_units: [
                 {
                   amount: {
-                    value: price,
+                    value: amount.toString(),
+                    currency_code: "USD"
                   },
+                  description: `Subscription Plan: ${planId}`,
                 },
               ],
             })
@@ -83,10 +91,9 @@ export default function PayPalButton({ planId, price, userId }: PayPalButtonProp
                 duration: 2000,
               })
 
-              // Reload after a short delay
-              setTimeout(() => {
-                window.location.reload()
-              }, 2000)
+              if (onSuccess) {
+                onSuccess()
+              }
             } catch (error) {
               console.error("Error during payment process:", error)
               setError("Payment failed. Please try again.")
@@ -115,18 +122,10 @@ export default function PayPalButton({ planId, price, userId }: PayPalButtonProp
         setError("Failed to initialize PayPal")
       }
     }
-  }, [paypalScriptLoaded, price, userId, planId, toast])
-
-  const isTestMode = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID?.includes('sb-');
+  }, [paypalScriptLoaded, amount, userId, planId, toast, onSuccess])
 
   return (
     <div className="w-full">
-      {isTestMode && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-4" role="alert">
-          <p className="font-bold">Test Mode</p>
-          <p>This is a sandbox PayPal integration. No real payments will be processed.</p>
-        </div>
-      )}
       <div ref={paypalRef} className="mt-4"></div>
       {loading && (
         <div className="flex items-center justify-center gap-2 mt-2">

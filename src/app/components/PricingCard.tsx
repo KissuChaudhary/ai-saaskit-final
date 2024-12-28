@@ -1,152 +1,109 @@
-'use client'
+import React from 'react';
+import { Check } from 'lucide-react';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { PayPalButtons } from "@paypal/react-paypal-js"
-import { CheckIcon } from 'lucide-react'
-import { useToast } from "@/hooks/use-toast"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+const plans = [
+  {
+    name: 'Starter',
+    price: 29,
+    features: [
+      '5 Projects',
+      '10GB Storage',
+      'Basic Analytics',
+      'Email Support',
+    ],
+    cta: 'Get Started',
+    popular: false,
+  },
+  {
+    name: 'Pro',
+    price: 79,
+    features: [
+      'Unlimited Projects',
+      '100GB Storage',
+      'Advanced Analytics',
+      'Priority Support',
+      'API Access',
+    ],
+    cta: 'Upgrade to Pro',
+    popular: true,
+  },
+  {
+    name: 'Enterprise',
+    price: 199,
+    features: [
+      'Unlimited Everything',
+      'Dedicated Server',
+      'Custom Integrations',
+      '24/7 Phone Support',
+      'On-site Training',
+    ],
+    cta: 'Contact Sales',
+    popular: false,
+  },
+];
 
-interface PricingCardProps {
-  title: string
-  price: string
-  description: string
-  features: string[]
-  buttonText: string
-  popular?: boolean
-  priceId: string
-}
-
-const PricingCard: React.FC<PricingCardProps> = ({
-  title,
-  price,
-  description,
-  features,
-  buttonText,
-  popular = false,
-  priceId,
-}) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
-
-  const createOrder = async (): Promise<string> => {
-    setIsLoading(true)
-    try {
-      const response = await fetch('/api/create-paypal-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ priceId }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create order')
-      }
-
-      const data = await response.json()
-      return data.id
-    } catch (error) {
-      console.error('Error creating order:', error)
-      toast({
-        title: "Error",
-        description: "Failed to create order. Please try again.",
-        variant: "destructive",
-      })
-      throw error // Re-throw the error instead of returning null
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const onApprove = async (data: { orderID: string }): Promise<void> => {
-    if (!data.orderID) {
-      console.error('No order ID received');
-      toast({
-        title: "Error",
-        description: "Failed to process order. Please try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true)
-    try {
-      const response = await fetch('/api/approve-paypal-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderID: data.orderID,
-          priceId: priceId,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to approve order')
-      }
-
-      await response.json()
-
-      toast({
-        title: "Success",
-        description: "Your subscription has been activated!",
-      })
-      router.refresh()
-    } catch (error) {
-      console.error('Error approving order:', error)
-      toast({
-        title: "Error",
-        description: "Failed to activate subscription. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
+const PricingSection: React.FC = () => {
   return (
-    <Card className={`overflow-hidden ${popular ? 'border-primary shadow-lg' : ''}`}>
-      <CardHeader className={popular ? 'bg-primary text-primary-foreground' : ''}>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription className={popular ? 'text-primary-foreground/90' : ''}>
-          {description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-6">
-        <div className="mb-4">
-          <span className="text-4xl font-bold">${price}</span>
-          <span className="text-muted-foreground ml-2">/month</span>
+    <section className="py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+            Simple, transparent pricing
+          </h2>
+          <p className="mt-4 text-xl text-gray-300">
+            Choose the plan that's right for you
+          </p>
         </div>
-        <ul className="space-y-3 mb-6">
-          {features.map((feature, index) => (
-            <li key={index} className="flex items-center gap-3">
-              <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
-              <span>{feature}</span>
-            </li>
+        <div className="mt-16 grid gap-8 lg:grid-cols-3 lg:gap-x-12">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`relative rounded-2xl border ${
+                plan.popular
+                  ? 'border-green-500 border-2'
+                  : 'border-gray-700'
+              } p-8 shadow-sm flex flex-col`}
+            >
+              {plan.popular && (
+                <span className="absolute top-0 right-0 -mt-2 -mr-2 inline-flex items-center rounded-full bg-green-500 px-2.5 py-0.5 text-xs font-medium text-white">
+                  Popular
+                </span>
+              )}
+              <h3 className="text-xl font-semibold text-white">{plan.name}</h3>
+              <p className="mt-4 flex items-baseline">
+                <span className="text-5xl font-extrabold text-white">
+                  ${plan.price}
+                </span>
+                <span className="ml-1 text-xl font-semibold text-gray-400">
+                  /month
+                </span>
+              </p>
+              <ul className="mt-6 space-y-4 flex-grow">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <Check className="h-6 w-6 text-green-500" />
+                    </div>
+                    <p className="ml-3 text-base text-gray-300">{feature}</p>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#"
+                className={`mt-8 block w-full rounded-md px-6 py-4 text-center text-base font-medium ${
+                  plan.popular
+                    ? 'bg-green-600 text-white hover:bg-green-400'
+                    : 'bg-[#FFBE1A] text-black hover:bg-[#FFBE1A]/80'
+                } transition duration-200 ease-in-out`}
+              >
+                {plan.cta}
+              </a>
+            </div>
           ))}
-        </ul>
-      </CardContent>
-      <CardFooter className="bg-muted/50 p-6">
-        {isLoading ? (
-          <Skeleton className="w-full h-10" />
-        ) : (
-          <PayPalButtons
-            createOrder={createOrder}
-            onApprove={onApprove}
-            style={{ layout: "horizontal", tagline: false }}
-            disabled={isLoading}
-            forceReRender={[priceId]}
-          />
-        )}
-      </CardFooter>
-    </Card>
-  )
-}
+        </div>
+      </div>
+    </section>
+  );
+};
 
-export default PricingCard
-
+export default PricingSection;

@@ -1,0 +1,99 @@
+'use client'
+
+import { useState } from 'react'
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import PayPalButton from '@/components/PayPalButton'
+import { loadStripe } from '@stripe/stripe-js'
+import axios from 'axios'
+
+interface PaymentButtonProps {
+  planId: string
+  amount: number
+  userId: string
+  onSuccess?: () => void
+}
+
+export default function PaymentButton({ planId, amount, userId, onSuccess }: PaymentButtonProps) {
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'razorpay'>('paypal')
+
+  const handleStripePayment = async () => {
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+    const response = await axios.post('/api/create-checkout-session', { planId, userId })
+    const session = response.data
+    await stripe?.redirectToCheckout({ sessionId: session.id })
+  }
+
+  const handleRazorpayPayment = async () => {
+    const response = await axios.post('/api/create-razorpay-order', { planId, userId })
+    const { orderId } = response.data
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: amount * 100,
+      currency: 'USD',
+      name: 'Unrealshot AI',
+      description: 'Subscription Purchase',
+      order_id: orderId,
+      handler: async (response: any) => {
+        try {
+          await axios.post('/api/verify-razorpay-payment', {
+            orderId,
+            paymentId: response.razorpay_payment_id,
+            signature: response.razorpay_signature,
+            planId,
+            userId,
+          })
+          if (onSuccess) onSuccess()
+        } catch (error) {
+          console.error('Payment verification failed', error)
+        }
+      },
+      prefill: {
+        name: 'Unrealshot AI',
+        email: 'contact@unrealshot.com',
+      },
+    }
+
+    const paymentObject = new (window as any).Razorpay(options)
+    paymentObject.open()
+  }
+
+  return (
+    <div className="space-y-4">
+      <Select onValueChange={(value: 'paypal' | 'razorpay') => setPaymentMethod(value)}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select payment method" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="paypal">PayPal</SelectItem>
+          {/* <SelectItem value="stripe">Stripe</SelectItem> */}
+          <SelectItem value="razorpay">Razorpay</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {paymentMethod === 'paypal' && (
+        <PayPalButton planId={planId} amount={amount} userId={userId} onSuccess={onSuccess} />
+      )}
+
+      {/* {paymentMethod === 'stripe' && (
+        <Button onClick={handleStripePayment} className="w-full">
+          Pay with Stripe
+        </Button>
+      )} */}
+
+      {paymentMethod === 'razorpay' && (
+        <Button onClick={handleRazorpayPayment} className="w-full">
+          Pay with Razorpay
+        </Button>
+      )}
+    </div>
+  )
+}
+

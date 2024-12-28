@@ -2,39 +2,32 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckIcon } from 'lucide-react'
-import PayPalButton from '@/components/PaypalButton'
+import PricingTable from '@/components/PricingTable'
 
-interface SubscriptionPlan {
-  id: string
-  name: string
-  description: string
-  price_id: string
-  amount: number
-  currency: string
-  interval: string
-  features: string[]
-}
+export const dynamic = 'force-dynamic'
 
 export default async function BillingPage() {
   const supabase = createServerComponentClient({ cookies })
 
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data, error } = await supabase.auth.getUser()
+  if (error) {
+    console.error('Error fetching user:', error)
+    return redirect("/login")
+  }
+  const user = data.user
 
-  if (!session) {
-    redirect('/login')
+  if (!user) {
+    return redirect('/login')
   }
 
-  const { data: plans, error } = await supabase
+  const { data: plans, error: plansError } = await supabase
     .from('subscription_plans')
     .select('*')
     .eq('active', true)
     .order('amount', { ascending: true })
 
-  console.log('Fetched plans:', plans);
-
-  if (error) {
-    console.error('Error fetching plans:', error)
+  if (plansError) {
+    console.error('Error fetching plans:', plansError)
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
@@ -78,41 +71,14 @@ export default async function BillingPage() {
           Choose the perfect plan for your needs. All plans include access to our core features.
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {plans.map((plan: SubscriptionPlan) => (
-          <Card key={plan.id} className={`overflow-hidden ${plan.name === 'Pro' ? 'border-primary shadow-lg' : ''}`}>
-            <CardHeader className={plan.name === 'Pro' ? 'bg-primary text-primary-foreground' : ''}>
-              <CardTitle>{plan.name}</CardTitle>
-              <CardDescription className={plan.name === 'Pro' ? 'text-primary-foreground/90' : ''}>
-                {plan.description}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="mb-4">
-                <span className="text-4xl font-bold">${(plan.amount / 100).toFixed(2)}</span>
-                <span className="text-muted-foreground ml-2">/{plan.interval}</span>
-              </div>
-              <ul className="space-y-3 mb-6">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-3">
-                    <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <PayPalButton
-                planId={plan.id}
-                price={(plan.amount / 100).toString()}
-                userId={session.user.id}
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <PricingTable user={user} />
       <div className="mt-8 text-center text-sm text-muted-foreground">
         <p>
           All prices are in {plans[0]?.currency?.toUpperCase() || 'USD'} and include all applicable taxes.
           Subscriptions automatically renew unless cancelled.
+        </p>
+        <p className="mt-2">
+          PayPal is our default payment method for your convenience. You can also choose to pay with Stripe or Razorpay.
         </p>
       </div>
     </div>
