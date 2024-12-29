@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { UserCircleIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 
 interface Profile {
@@ -11,7 +10,6 @@ interface Profile {
   username?: string
   website?: string
   bio?: string
-  avatar_url?: string | null
 }
 
 export default function ProfileSettings() {
@@ -23,11 +21,7 @@ export default function ProfileSettings() {
   const router = useRouter()
   const supabase = createClientComponentClient()
 
-  useEffect(() => {
-    fetchProfile()
-  }, [fetchProfile])
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -49,7 +43,11 @@ export default function ProfileSettings() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [supabase, router])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
 
   async function updateProfile(e: React.FormEvent) {
     e.preventDefault()
@@ -68,7 +66,11 @@ export default function ProfileSettings() {
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          ...profile,
+          id: profile.id,
+          full_name: profile.full_name,
+          username: profile.username,
+          website: profile.website,
+          bio: profile.bio,
           updated_at: new Date().toISOString(),
         })
 
@@ -83,99 +85,6 @@ export default function ProfileSettings() {
       router.refresh() // Refresh the page to update any displayed profile data
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile')
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  async function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    try {
-      setError(null)
-      const file = event.target.files?.[0]
-      if (!file) return
-
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setError('Please upload an image file')
-        return
-      }
-
-      // Validate file size (5MB)
-      const maxSize = 5 * 1024 * 1024 // 5MB
-      if (file.size > maxSize) {
-        setError('Image size must be less than 5MB')
-        return
-      }
-
-      setIsSaving(true)
-
-      // Create a unique file name
-      const fileExt = file.name.split('.').pop()
-      const userId = profile?.id
-      const fileName = `${userId}/${Date.now()}.${fileExt}`
-
-      // Upload file
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
-        })
-
-      if (uploadError) throw uploadError
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName)
-
-      // Update profile with new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', profile?.id)
-
-      if (updateError) throw updateError
-
-      setProfile(profile ? { ...profile, avatar_url: publicUrl } : null)
-      setSuccessMessage('Avatar updated successfully')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload avatar')
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  async function handleAvatarRemove() {
-    if (!profile?.avatar_url) return
-
-    try {
-      setIsSaving(true)
-      setError(null)
-
-      // Extract file name from URL
-      const fileName = profile.avatar_url.split('/').pop()
-      if (fileName) {
-        // Remove file from storage
-        const { error: deleteError } = await supabase.storage
-          .from('avatars')
-          .remove([fileName])
-
-        if (deleteError) throw deleteError
-      }
-
-      // Update profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: null })
-        .eq('id', profile.id)
-
-      if (updateError) throw updateError
-
-      setProfile(profile ? { ...profile, avatar_url: null } : null)
-      setSuccessMessage('Avatar removed successfully')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to remove avatar')
     } finally {
       setIsSaving(false)
     }
@@ -211,49 +120,6 @@ export default function ProfileSettings() {
       )}
 
       <div className="bg-[#111111] rounded-2xl p-8 border border-white/5">
-        {/* Avatar Section */}
-        <div className="flex items-center mb-8 pb-8 border-b border-white/5">
-          <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center overflow-hidden">
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt="Profile"
-                className="w-20 h-20 object-cover"
-              />
-            ) : (
-              <UserCircleIcon className="w-12 h-12 text-white/20" />
-            )}
-          </div>
-          <div className="ml-6">
-            <h3 className="text-lg font-medium text-white">Profile Picture</h3>
-            <p className="text-sm text-white/60 mb-4">
-              Upload a new profile picture or remove the current one
-            </p>
-            <div className="flex space-x-4">
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                />
-                <span className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors inline-block">
-                  Upload New
-                </span>
-              </label>
-              {profile?.avatar_url && (
-                <button
-                  type="button"
-                  onClick={handleAvatarRemove}
-                  className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors"
-                >
-                  Remove
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Profile Form */}
         <form onSubmit={updateProfile}>
           <div className="space-y-6">
@@ -330,4 +196,5 @@ export default function ProfileSettings() {
       </div>
     </div>
   )
-} 
+}
+

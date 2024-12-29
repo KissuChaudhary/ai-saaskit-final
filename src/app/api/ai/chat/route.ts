@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  baseURL: process.env.LLM_BASE_URL,
-  apiKey: process.env.LLM_API_KEY,
+  baseURL: process.env.NEXT_PUBLIC_APP_URL,
+  apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function POST(req: Request) {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
     // Make request to OpenAI
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       messages: messages,
       temperature: 0.7,
       max_tokens: 1000,

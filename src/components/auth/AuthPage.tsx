@@ -42,34 +42,7 @@ function AuthContent() {
 
   return (
     <div className="min-h-screen bg-[#000000]">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#000000]/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <Image src="/logo.svg" alt="Logo" width={32} height={32} priority />
-              <span className="text-white font-bold text-xl">SaaS Kit Pro</span>
-            </Link>
 
-            {/* Navigation */}
-            <nav className="flex items-center space-x-6">
-              <Link href="/features" className="text-white/80 hover:text-white transition-colors">
-                Features
-              </Link>
-              <Link href="/docs" className="text-white/80 hover:text-white transition-colors">
-                Documentation
-              </Link>
-              <Link 
-                href={view === 'sign-in' ? '/auth?view=sign-up' : '/auth?view=sign-in'} 
-                className="text-[#FFBE1A] hover:text-[#FFBE1A]/80 transition-colors"
-              >
-                {view === 'sign-in' ? 'Sign up' : 'Sign in'}
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
 
       {/* Main Content */}
       <div className="flex min-h-screen flex-col items-center justify-center">

@@ -41,7 +41,13 @@ export default function PayPalButton({ planId, amount, userId, onSuccess }: PayP
     document.body.appendChild(script)
 
     return () => {
-      document.body.removeChild(script)
+      if (script.parentNode) {
+        script.parentNode.removeChild(script)
+      }
+      if (paypalRef.current) {
+        paypalRef.current.innerHTML = ''
+      }
+      window.paypal = undefined
     }
   }, [])
 
@@ -120,6 +126,12 @@ export default function PayPalButton({ planId, amount, userId, onSuccess }: PayP
       } else {
         console.error("PayPal SDK is not fully loaded")
         setError("Failed to initialize PayPal")
+      }
+    }
+
+    return () => {
+      if (paypalRef.current) {
+        paypalRef.current.innerHTML = ''
       }
     }
   }, [paypalScriptLoaded, amount, userId, planId, toast, onSuccess])

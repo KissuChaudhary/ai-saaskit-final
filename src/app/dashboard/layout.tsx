@@ -8,10 +8,10 @@ import {
   HomeIcon,
   ChartBarIcon,
   UserCircleIcon,
-  DocumentTextIcon,
   Cog6ToothIcon,
   PhotoIcon,
   ChevronDownIcon,
+  
 } from '@heroicons/react/24/outline'
 import Header from '@/components/dashboard/Header'
 import { User } from '@supabase/supabase-js'
@@ -24,10 +24,9 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },
-  { name: 'AI Headshot', href: '/dashboard/ai-headshot', icon: PhotoIcon },
+  { name: 'AI Avatar', href: '/dashboard/ai-avatar', icon: Cog6ToothIcon },
   { name: 'Generate Images', href: '/dashboard/images', icon: PhotoIcon },
   { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
-  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
 ]
 
 export default function DashboardLayout({

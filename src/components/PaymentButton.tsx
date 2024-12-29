@@ -38,7 +38,7 @@ export default function PaymentButton({ planId, amount, userId, onSuccess }: Pay
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: amount * 100,
       currency: 'USD',
-      name: 'Unrealshot AI',
+      name: 'Your Company Name',
       description: 'Subscription Purchase',
       order_id: orderId,
       handler: async (response: any) => {
@@ -56,8 +56,8 @@ export default function PaymentButton({ planId, amount, userId, onSuccess }: Pay
         }
       },
       prefill: {
-        name: 'Unrealshot AI',
-        email: 'contact@unrealshot.com',
+        name: 'User Name',
+        email: 'user@example.com',
       },
     }
 
@@ -68,13 +68,12 @@ export default function PaymentButton({ planId, amount, userId, onSuccess }: Pay
   return (
     <div className="space-y-4">
       <Select onValueChange={(value: 'paypal' | 'razorpay') => setPaymentMethod(value)}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full bg-black/40 border-white/10 text-white">
           <SelectValue placeholder="Select payment method" />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="paypal">PayPal</SelectItem>
-          {/* <SelectItem value="stripe">Stripe</SelectItem> */}
-          <SelectItem value="razorpay">Razorpay</SelectItem>
+        <SelectContent side="top" className="bg-black/90 border-white/10">
+          <SelectItem value="paypal" className="text-white hover:bg-white/10">PayPal</SelectItem>
+          <SelectItem value="razorpay" className="text-white hover:bg-white/10">Razorpay</SelectItem>
         </SelectContent>
       </Select>
 
@@ -82,14 +81,11 @@ export default function PaymentButton({ planId, amount, userId, onSuccess }: Pay
         <PayPalButton planId={planId} amount={amount} userId={userId} onSuccess={onSuccess} />
       )}
 
-      {/* {paymentMethod === 'stripe' && (
-        <Button onClick={handleStripePayment} className="w-full">
-          Pay with Stripe
-        </Button>
-      )} */}
-
       {paymentMethod === 'razorpay' && (
-        <Button onClick={handleRazorpayPayment} className="w-full">
+        <Button 
+          onClick={handleRazorpayPayment} 
+          className="w-full bg-[#FFBE1A] text-black hover:bg-[#FFBE1A]/80"
+        >
           Pay with Razorpay
         </Button>
       )}

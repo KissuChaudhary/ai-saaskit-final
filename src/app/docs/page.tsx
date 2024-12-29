@@ -133,27 +133,7 @@ export default function DocsPage() {
 
   return (
     <div className="min-h-screen bg-[#000000]">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#000000]/80 backdrop-blur-sm border-b border-white/5">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-white font-bold text-xl">
-              Documentation
-            </Link>
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="text-white/80 hover:text-white transition-colors">
-                Home
-              </Link>
-              <Link href="/features" className="text-white/80 hover:text-white transition-colors">
-                Features
-              </Link>
-              <Link href="/auth" className="text-[#FFBE1A] hover:text-[#FFBE1A]/80 transition-colors">
-                Sign In
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+
 
       {/* Main Content */}
       <div className="container mx-auto px-4 pt-24 pb-12">

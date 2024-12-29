@@ -4,40 +4,47 @@ import { Check } from 'lucide-react';
 const plans = [
   {
     name: 'Starter',
-    price: 29,
+    price: 5.99,
+    credits: 50,
     features: [
-      '5 Projects',
-      '10GB Storage',
-      'Basic Analytics',
-      'Email Support',
+      'Access to All AI-Powered Image Tools',
+      'High-Quality Images',
+      'Cost-Effective Per Image',
+      'Cancel Anytime',
     ],
     cta: 'Get Started',
     popular: false,
   },
   {
     name: 'Pro',
-    price: 79,
+    price: 15.99,
+    credits: 200,
     features: [
-      'Unlimited Projects',
-      '100GB Storage',
-      'Advanced Analytics',
+      'Access to All AI-Powered Image Tools',
+      'High-Quality Images',
+      'Cost-Effective Per Image',
       'Priority Support',
-      'API Access',
+      'Weekly AI Art Newsletter',
+      'Cancel Anytime',
     ],
     cta: 'Upgrade to Pro',
     popular: true,
   },
   {
     name: 'Enterprise',
-    price: 199,
+    price: 39.99,
+    credits: 600,
     features: [
-      'Unlimited Everything',
-      'Dedicated Server',
-      'Custom Integrations',
-      '24/7 Phone Support',
-      'On-site Training',
+      'Access to All AI-Powered Image Tools',
+      'Highest-Quality Images',
+      'Cost-Effective Per Image',
+      'Highest-Priority Processing',
+      'Priority Support',
+      'Earliest Access to New Features',
+      'Weekly AI Art Newsletter',
+      'Cancel Anytime',
     ],
-    cta: 'Contact Sales',
+    cta: 'Get Enterprise',
     popular: false,
   },
 ];
@@ -60,12 +67,12 @@ const PricingSection: React.FC = () => {
               key={plan.name}
               className={`relative rounded-2xl border ${
                 plan.popular
-                  ? 'border-green-500 border-2'
+                  ? 'border-[#FFBE1A] border-2'
                   : 'border-gray-700'
-              } p-8 shadow-sm flex flex-col`}
+              }  p-8 shadow-sm flex flex-col`}
             >
               {plan.popular && (
-                <span className="absolute top-0 right-0 -mt-2 -mr-2 inline-flex items-center rounded-full bg-green-500 px-2.5 py-0.5 text-xs font-medium text-white">
+                <span className="absolute top-0 right-0 -mt-2 -mr-2 inline-flex items-center rounded-full bg-[#FFBE1A] px-2.5 py-0.5 text-xs font-medium text-black">
                   Popular
                 </span>
               )}
@@ -78,22 +85,25 @@ const PricingSection: React.FC = () => {
                   /month
                 </span>
               </p>
+              <p className="mt-2 text-sm text-gray-400">
+                Includes {plan.credits} credits
+              </p>
               <ul className="mt-6 space-y-4 flex-grow">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start">
                     <div className="flex-shrink-0">
-                      <Check className="h-6 w-6 text-green-500" />
+                      <Check className="h-6 w-6 text-[#FFBE1A]" />
                     </div>
                     <p className="ml-3 text-base text-gray-300">{feature}</p>
                   </li>
                 ))}
               </ul>
               <a
-                href="#"
+                href="/auth"
                 className={`mt-8 block w-full rounded-md px-6 py-4 text-center text-base font-medium ${
                   plan.popular
-                    ? 'bg-green-600 text-white hover:bg-green-400'
-                    : 'bg-[#FFBE1A] text-black hover:bg-[#FFBE1A]/80'
+                    ? 'bg-[#FFBE1A] text-black hover:bg-[#FFBE1A]/80'
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
                 } transition duration-200 ease-in-out`}
               >
                 {plan.cta}
@@ -107,3 +117,4 @@ const PricingSection: React.FC = () => {
 };
 
 export default PricingSection;
+

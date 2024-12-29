@@ -45,16 +45,16 @@ const PricingTable = ({ user }: Props) => {
   return (
     <div className="px-4 mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-8">
       {plans.map((plan) => (
-        <Card key={plan.id} className="rounded-2xl bg-white border border-gray-200 shadow-sm">
+        <Card key={plan.id} className="rounded-2xl bg-black/40 border border-white/10 shadow-sm">
           <CardHeader className="text-center p-6 sm:px-8 lg:p-12">
-            <CardTitle className="text-lg font-medium text-gray-900">
+            <CardTitle className="text-lg font-medium text-white">
               {plan.name}
             </CardTitle>
             <div className="mt-2 sm:mt-4">
-              <strong className="text-3xl font-bold text-gray-900 sm:text-4xl">
+              <strong className="text-3xl font-bold text-white sm:text-4xl">
                 ${plan.amount}
               </strong>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-400">
                 {" "}
                 /{plan.interval}
               </span>
@@ -71,7 +71,7 @@ const PricingTable = ({ user }: Props) => {
                     viewBox="0 0 24 24"
                     strokeWidth="1.5"
                     stroke="currentColor"
-                    className="w-5 h-5 text-primary"
+                    className="w-5 h-5 text-[#FFBE1A]"
                   >
                     <path
                       strokeLinecap="round"
@@ -79,7 +79,7 @@ const PricingTable = ({ user }: Props) => {
                       d="M4.5 12.75l6 6 9-13.5"
                     />
                   </svg>
-                  <span className="text-gray-700">{feature}</span>
+                  <span className="text-gray-300">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -100,4 +100,3 @@ const PricingTable = ({ user }: Props) => {
 }
 
 export default PricingTable
-

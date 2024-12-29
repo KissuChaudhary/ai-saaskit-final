@@ -78,7 +78,7 @@ export default async function BillingPage() {
           Subscriptions automatically renew unless cancelled.
         </p>
         <p className="mt-2">
-          PayPal is our default payment method for your convenience. You can also choose to pay with Stripe or Razorpay.
+          PayPal is our default payment method for your convenience. You can also choose to pay with Razorpay.
         </p>
       </div>
     </div>
