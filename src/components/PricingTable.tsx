@@ -24,12 +24,24 @@ const PricingTable = ({ user }: Props) => {
 
   useEffect(() => {
     const fetchPlans = async () => {
-      const response = await fetch('/api/subscription-plans')
-      const data = await response.json()
-      setPlans(data)
+      try {
+        const response = await fetch('/api/subscription-plans')
+        if (!response.ok) {
+          throw new Error('Failed to fetch subscription plans')
+        }
+        const data = await response.json()
+        setPlans(data)
+      } catch (error) {
+        console.error('Error fetching subscription plans:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load subscription plans. Please try again later.",
+          variant: "destructive",
+        })
+      }
     }
     fetchPlans()
-  }, [])
+  }, [toast])
 
   const handlePaymentSuccess = () => {
     toast({
@@ -100,3 +112,4 @@ const PricingTable = ({ user }: Props) => {
 }
 
 export default PricingTable
+

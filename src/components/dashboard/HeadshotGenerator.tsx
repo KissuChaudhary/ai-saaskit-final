@@ -173,7 +173,7 @@ export default function AIHeadshotGenerator() {
           </div>
         ) : (
           <Image
-            src="/placeholder.svg?height=600&width=800"
+            src="/ai-face-swap.png"
             alt="Placeholder Image"
             width={800}
             height={600}

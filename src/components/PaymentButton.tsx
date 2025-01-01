@@ -23,13 +23,6 @@ interface PaymentButtonProps {
 export default function PaymentButton({ planId, amount, userId, onSuccess }: PaymentButtonProps) {
   const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'razorpay'>('paypal')
 
-  const handleStripePayment = async () => {
-    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
-    const response = await axios.post('/api/create-checkout-session', { planId, userId })
-    const session = response.data
-    await stripe?.redirectToCheckout({ sessionId: session.id })
-  }
-
   const handleRazorpayPayment = async () => {
     const response = await axios.post('/api/create-razorpay-order', { planId, userId })
     const { orderId } = response.data
