@@ -26,7 +26,6 @@ const navigation: NavItem[] = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },
   { name: 'AI Avatar', href: '/dashboard/ai-avatar', icon: Cog6ToothIcon },
   { name: 'Generate Images', href: '/dashboard/images', icon: PhotoIcon },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
 ]
 
 export default function DashboardLayout({
