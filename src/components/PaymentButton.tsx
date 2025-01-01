@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import PayPalButton from '@/components/PayPalButton'
+import PayPalButton from './PayPalButton'
 import { loadStripe } from '@stripe/stripe-js'
 import axios from 'axios'
 
