@@ -4,7 +4,7 @@ import { User } from "@supabase/supabase-js"
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import PaymentButton from './PaymentButton'
+import PaymentButton from '@/components/PaymentButton'
 
 interface SubscriptionPlan {
   id: string;
@@ -24,24 +24,12 @@ const PricingTable = ({ user }: Props) => {
 
   useEffect(() => {
     const fetchPlans = async () => {
-      try {
-        const response = await fetch('/api/subscription-plans')
-        if (!response.ok) {
-          throw new Error('Failed to fetch subscription plans')
-        }
-        const data = await response.json()
-        setPlans(data)
-      } catch (error) {
-        console.error('Error fetching subscription plans:', error)
-        toast({
-          title: "Error",
-          description: "Failed to load subscription plans. Please try again later.",
-          variant: "destructive",
-        })
-      }
+      const response = await fetch('/api/subscription-plans')
+      const data = await response.json()
+      setPlans(data)
     }
     fetchPlans()
-  }, [toast])
+  }, [])
 
   const handlePaymentSuccess = () => {
     toast({
@@ -112,4 +100,3 @@ const PricingTable = ({ user }: Props) => {
 }
 
 export default PricingTable
-
