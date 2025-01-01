@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['fal.media', 'replicate.delivery'],
+    unoptimized: true,
   },
   async redirects() {
     return [
