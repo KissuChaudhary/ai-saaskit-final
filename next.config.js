@@ -3,23 +3,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['fal.media', 'replicate.delivery'],
-    unoptimized: true,
+    domains: ['fal.media', 'replicate.delivery', 'www.paypalobjects.com'],
   },
-  async redirects() {
-    return [
-      // Add any necessary redirects here
-    ]
+  experimental: {
+    serverActions: true,
   },
-  async rewrites() {
-    return [
-      // Add any necessary rewrites here
-    ]
+  webpack: (config) => {
+    config.externals = [...config.externals, { canvas: 'canvas' }];
+    return config;
   },
-  // Add output configuration for static export if you're not using dynamic routes
-  // output: 'export',
-  // Add trailing slash configuration if needed
-  // trailingSlash: true,
 }
 
 module.exports = nextConfig

@@ -25,7 +25,7 @@ export default function PayPalButton({ planId, amount, userId, onSuccess }: PayP
   const { toast } = useToast()
 
   useEffect(() => {
-    if (window.paypal) {
+    if (typeof window !== 'undefined' && window.paypal) {
       setPaypalScriptLoaded(true)
       return
     }
@@ -52,7 +52,7 @@ export default function PayPalButton({ planId, amount, userId, onSuccess }: PayP
   }, [])
 
   useEffect(() => {
-    if (paypalScriptLoaded && paypalRef.current && window.paypal) {
+    if (paypalScriptLoaded && paypalRef.current && typeof window !== 'undefined' && window.paypal) {
       const paypal = window.paypal;
       if (paypal.Buttons && paypal.FUNDING) {
         paypal.Buttons({
